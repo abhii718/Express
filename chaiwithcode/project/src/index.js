@@ -61,7 +61,6 @@ dbConnection
   .catch((error) => {
     console.log("MONGO DB connection is failed !!!", error);
   });
-  
 
 /*
 import express from "express";
