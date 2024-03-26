@@ -1,18 +1,15 @@
-import mongoose from "mongoose";
-import { DB_NAME } from "../constants.js";
+import multer from "multer";
 
-const connectDB = async () => {
-  try {
-    const connectionInstance = await mongoose.connect(
-      `${process.env.MONGODB_URI}/${DB_NAME}`
-    );
-    console.log(
-      `\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`
-    );
-  } catch (error) {
-    console.log("MONGODB connection FAILED ", error);
-    process.exit(1);
-  }
-};
-
-export default connectDB;
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./public/temp")
+    },
+    filename: function (req, file, cb) {
+      
+      cb(null, file.originalname)
+    }
+  })
+  
+export const upload = multer({ 
+    storage, 
+})
