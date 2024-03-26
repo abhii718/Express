@@ -1,67 +1,76 @@
-// Import dotenv module to load environment variables from .env file
 import dotenv from "dotenv";
-
-// Import the connectDB function that connects to MongoDB
 import connectDB from "./db/index.js";
+import { app } from "./app.js";
+// import express from "express";
+// import cors from "cors";
+// import cookieParser from "cookie-parser";
 
-// Load environment variables from the .env file
 dotenv.config({
   path: "./env",
 });
+connectDB()
+.then(() => {
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+    })
+})
+.catch((err) => {
+    console.log("MONGO db connection failed !!! ", err);
+})
 
-// Connect to MongoDB using the connectDB function
+
+
+
+
+
+
+
+
+/*
+
 const dbConnection = connectDB();
 
-// Wait for the MongoDB connection to be established, then start the server
 dbConnection
   .then(() => {
-    // Import the Express application
     const app = express();
 
-    // Configure Cross-Origin Resource Sharing (CORS) middleware
     app.use(
       cors({
-        // Enable CORS for the given origin
         origin: process.env.CORS_ORIGIN,
-        // Set credentials option true for accessing protected resources
         credentials: true,
       })
     );
 
-    // Configure JSON request body parsing
     app.use(
       express.json({
-        // Limit the request body size to 16kb
         limit: "16kb",
       })
     );
 
-    // Configure URL-encoded request body parsing
     app.use(
       express.urlencoded({
-        // Allow extended Tiny Encoding
         extended: true,
-        // Limit the request body size to 16kb
         limit: "16kb",
       })
     );
 
-    // Use the Express static middleware to serve static files
     app.use(express.static("public"));
 
-    // Configure Cookie-parser middleware to handle cookies
     app.use(cookieParser());
 
-    // Start the server
+    app.get("/", (req, res) => {
+      console.log("hi I am abhi singh");
+      res.send("Hello World!");
+    });
+
     app.listen(process.env.PORT || 8000, () => {
-      // Log information about the server start
       console.log(`Server is running at port ${process.env.PORT || 8000}`);
     });
   })
   .catch((error) => {
     console.log("MONGO DB connection is failed !!!", error);
   });
-
+*/
 /*
 import express from "express";
 const app = express();

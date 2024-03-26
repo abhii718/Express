@@ -17,7 +17,7 @@ class ApiResponse {
   }
   
   // Export the ApiResponse class for use in other modules
-  module.exports = {
+  export default {
     ApiResponse
   }
   

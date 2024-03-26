@@ -31,6 +31,6 @@ class ApiError extends Error {
   }
   
   // Export the ApiError class for use in other modules
-  module.exports = {
+  export default {
     ApiError
   }
