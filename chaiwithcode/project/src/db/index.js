@@ -1,3 +1,8 @@
+// Connects to the MongoDB database using the Mongoose library with the MONGODB_URI and DB_NAME constants.
+// If there is an error, the script logs the error and exits the process.
+// If the connection is successful, the script logs the connection host.
+// The connectDB function is then exported as the default export.
+
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 

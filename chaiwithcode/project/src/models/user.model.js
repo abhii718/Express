@@ -1,3 +1,10 @@
+// The code imports Mongoose, Schema, jwt, and bcrypt to define a schema for a user model.
+// The userSchema includes fields for username, email, full name, avatar, cover image, watch history, password, and refresh token.
+// The pre-save hook is used to hash the user's password before it is saved to the database.
+// The userSchema also includes methods for checking if the password is correct, generating access tokens, and generating refresh tokens.
+// The user schema is then exported as a Mongoose model using the User name.
+// The code checks for unique, required, lowercase, trim, timestamps, and other validations on the schema to ensure the data is accurate and validated.
+
 import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"

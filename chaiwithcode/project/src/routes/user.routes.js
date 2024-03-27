@@ -1,3 +1,10 @@
+// Imports required modules, middleware, and controllers for user-related routes
+// Handles HTTP requests for user registration, login, and authentication
+// Provides endpoints to manage user account details, password, avatar, and cover image
+// Endpoints to get user channel profile and watch history
+// Protected routes using the verifyJWT middleware
+// Exports the router object for use in the main app.js file.
+
 import { Router } from "express";
 import {
   logoutUser,
@@ -14,7 +21,6 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-
 
 const router = Router();
 router.route("/register").post(
@@ -40,9 +46,8 @@ router.route("/change-password").post(verifyJWT, changeCurrentPassword)
 router.route("/current-user").get(verifyJWT, getCurrentUser)
 router.route("/update-account").patch(verifyJWT, updateAccountDetail)
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
-router.route("/cover-image").patch(verifyJWT, upload.single("coverImage") , updateUserCoverImage)
+router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage)
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile)
 router.route("/history").get(verifyJWT, getWatchHistory)
-
 
 export default router;

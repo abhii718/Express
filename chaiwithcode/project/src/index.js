@@ -1,3 +1,7 @@
+// A new script has been added to set up a server.
+// The code uses the dotenv module to load environment variables from a .env file.
+// The code establishes a connection to a MongoDB database using the connectDB function.
+
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";

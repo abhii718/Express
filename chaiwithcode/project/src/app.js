@@ -1,3 +1,8 @@
+// The code imports express, cors, and cookie-parser modules and creates an instance of the express application.
+// The code sets up middleware to handle CORS, JSON, URL-encoded data, and static files.
+// The userRouter is imported from the user.routes.js module and attached to the /api/v1/users/ route using the app.use() method.
+// The code exports the app object for further use.
+
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"

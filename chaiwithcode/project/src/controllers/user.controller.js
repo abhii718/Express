@@ -1,3 +1,9 @@
+// The code defines various middleware and endpoint functions for handling user authentication and CRUD operations, such as registering a user, logging in, logging out, and updating account details.
+// Middleware functions are used to generate access and refresh tokens, verify JWTs, validate user input, and handle errors.
+// Endpoint functions include registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetail, updateUserAvatar, updateUserCoverImage, getUserChannelProfile, and getWatchHistory.
+// The code relies on various libraries and middleware, such as multer for file uploads, jsonwebtoken for token generation, and mongoose for database operations.
+// The code exports an express router with all the endpoints defined, which can be imported and used in another file.
+
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";

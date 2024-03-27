@@ -1,3 +1,6 @@
+// Wraps an asynchronous handler function to handle the case where it throws an error.
+// Returns a middleware function that catches errors and passes them to the next Express middleware function.
+
 const asyncHandler = (requestHandler) => {
   return (req, res, next) => {
       Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))
@@ -5,27 +8,3 @@ const asyncHandler = (requestHandler) => {
 }
 
 export { asyncHandler }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const asyncHandler = (fn) => async (req, res, next) => {
-//   try {
-//     await fn(req, res, next);
-//   } catch (error) {
-//     res.status(error.code || 5000).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };

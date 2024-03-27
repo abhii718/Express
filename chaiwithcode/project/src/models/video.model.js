@@ -1,3 +1,6 @@
+// This code imports the necessary modules to define a Mongoose schema for video content, which includes the following fields: videoFile, thumbnail, title, description, duration, views, isPublished, and owner.
+// The mongoose-aggregate-paginate-v2 package is used to enable pagination in the schema, which can be helpful in managing large data sets. The Video model is then exported for use in other modules.
+
 import mongoose, {Schema} from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
