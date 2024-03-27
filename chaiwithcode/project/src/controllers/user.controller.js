@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -373,6 +374,69 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Successfully fetched channel details"));
 });
 
+const getWatchHistory = asyncHandler(async (req, res) => {
+  const userId = req.params._id;
+  
+  // Validate the userId to ensure it's a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json(new ApiResponse(400, null, "Invalid user ID"));
+  }
+
+  try {
+    const user = await User.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "videos",
+          localField: "watchHistory",
+          foreignField: "_id",
+          as: "watchHistory",
+          pipeline: [
+            {
+              $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                  {
+                    $project: {
+                      fullName: 1,
+                      username: 1,
+                      avatar: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $addFields: {
+                owner: { $first: "$owner" },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    // Check if the user array is empty
+    if (user.length === 0) {
+      return res.status(404).json(new ApiResponse(404, null, "User not found"));
+    }
+
+    // Send the watch history in the response
+    return res.status(200).json(new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully"));
+  } catch (error) {
+    console.error("Error fetching watch history:", error);
+    return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+  }
+});
+
+
 export {
   registerUser,
   loginUser,
@@ -384,4 +448,5 @@ export {
   updateUserAvatar,
   updateUserCoverImage,
   getUserChannelProfile,
+  getWatchHistory,
 };
