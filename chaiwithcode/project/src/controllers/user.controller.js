@@ -169,7 +169,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-const refreshAccessToken = asyncHandler(async (req, req) => {
+const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken;
   if (!incomingRefreshToken) {
     throw new ErrorResponse(401, "Please provide a token");
@@ -252,7 +252,7 @@ const updateAccountDetail = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, seer, "Account details updated successfully"));
+    .json(new ApiResponse(200, "Account details updated successfully"));
 });
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
