@@ -157,8 +157,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
-      $set: {
-        refreshToken: undefined,
+      $unset: {
+        refreshToken: 1,
       },
     },
     {
@@ -177,7 +177,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken;
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
   if (!incomingRefreshToken) {
     throw new ErrorResponse(401, "Please provide a token");
   }
@@ -188,7 +189,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
-    const user = User.findById(decodedToken?._id);
+    const user = await User.findById(decodedToken?._id);
     if (!user) {
       throw new ErrorResponse(401, "invalid refresh token");
     }
@@ -372,73 +373,70 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  if (!channel?.lenght) {
-    throw new ApiError(404, "Channel not found");
+  if (!channel?.length) {
+    throw new ApiError(404, "Channel not found!");
   }
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Successfully fetched channel details"));
+
+  return res.status(200).json({
+    statusCode: 200,
+    data: channel[0],
+    message: "Successfully fetched channel details",
+    success: true,
+  });
 });
 
 const getWatchHistory = asyncHandler(async (req, res) => {
-  const userId = req.params._id;
-  
-  // Validate the userId to ensure it's a valid ObjectId
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json(new ApiResponse(400, null, "Invalid user ID"));
-  }
-
   try {
-    const user = await User.aggregate([
-      {
-        $match: {
-          _id: mongoose.Types.ObjectId(userId),
-        },
-      },
-      {
-        $lookup: {
-          from: "videos",
-          localField: "watchHistory",
-          foreignField: "_id",
-          as: "watchHistory",
-          pipeline: [
-            {
+      const user = await User.aggregate([
+          {
+              $match: {
+                  _id: new mongoose.Types.ObjectId(req.user._id)
+              }
+          },
+          {
               $lookup: {
-                from: "users",
-                localField: "owner",
-                foreignField: "_id",
-                as: "owner",
-                pipeline: [
-                  {
-                    $project: {
-                      fullName: 1,
-                      username: 1,
-                      avatar: 1,
-                    },
-                  },
-                ],
-              },
-            },
-            {
-              $addFields: {
-                owner: { $first: "$owner" },
-              },
-            },
-          ],
-        },
-      },
-    ]);
+                  from: "videos",
+                  localField: "watchHistory",
+                  foreignField: "_id",
+                  as: "watchHistory",
+                  pipeline: [
+                      {
+                          $lookup: {
+                              from: "users",
+                              localField: "owner",
+                              foreignField: "_id",
+                              as: "owner",
+                              pipeline: [
+                                  {
+                                      $project: {
+                                          fullName: 1,
+                                          username: 1,
+                                          avatar: 1
+                                      }
+                                  }
+                              ]
+                          }
+                      },
+                      {
+                          $addFields:{
+                              owner:{
+                                  $first: "$owner"
+                              }
+                          }
+                      }
+                  ]
+              }
+          }
+      ]);
 
-    // Check if the user array is empty
-    if (user.length === 0) {
-      return res.status(404).json(new ApiResponse(404, null, "User not found"));
-    }
+      if (user.length === 0) {
+          return res.status(404).json(new ApiResponse(404, null, "User not found"));
+      }
 
-    // Send the watch history in the response
-    return res.status(200).json(new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully"));
+      return res.status(200).json(new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully"));
   } catch (error) {
-    console.error("Error fetching watch history:", error);
-    return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+      console.error("Error fetching watch history:", error);
+      return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
   }
 });
 
