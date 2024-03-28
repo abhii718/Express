@@ -387,59 +387,68 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
 const getWatchHistory = asyncHandler(async (req, res) => {
   try {
-      const user = await User.aggregate([
-          {
-              $match: {
-                  _id: new mongoose.Types.ObjectId(req.user._id)
-              }
-          },
-          {
+    const user = await User.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.user._id),
+        },
+      },
+      {
+        $lookup: {
+          from: "videos",
+          localField: "watchHistory",
+          foreignField: "_id",
+          as: "watchHistory",
+          pipeline: [
+            {
               $lookup: {
-                  from: "videos",
-                  localField: "watchHistory",
-                  foreignField: "_id",
-                  as: "watchHistory",
-                  pipeline: [
-                      {
-                          $lookup: {
-                              from: "users",
-                              localField: "owner",
-                              foreignField: "_id",
-                              as: "owner",
-                              pipeline: [
-                                  {
-                                      $project: {
-                                          fullName: 1,
-                                          username: 1,
-                                          avatar: 1
-                                      }
-                                  }
-                              ]
-                          }
-                      },
-                      {
-                          $addFields:{
-                              owner:{
-                                  $first: "$owner"
-                              }
-                          }
-                      }
-                  ]
-              }
-          }
-      ]);
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                  {
+                    $project: {
+                      fullName: 1,
+                      username: 1,
+                      avatar: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $addFields: {
+                owner: {
+                  $first: "$owner",
+                },
+              },
+            },
+          ],
+        },
+      },
+    ]);
 
-      if (user.length === 0) {
-          return res.status(404).json(new ApiResponse(404, null, "User not found"));
-      }
+    if (user.length === 0) {
+      return res.status(404).json(new ApiResponse(404, null, "User not found"));
+    }
 
-      return res.status(200).json(new ApiResponse(200, user[0].watchHistory, "Watch history fetched successfully"));
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          user[0].watchHistory,
+          "Watch history fetched successfully"
+        )
+      );
   } catch (error) {
-      console.error("Error fetching watch history:", error);
-      return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+    console.error("Error fetching watch history:", error);
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Internal Server Error"));
   }
 });
-
 
 export {
   registerUser,
